@@ -79,5 +79,6 @@ kn = KNeighborsClassifier( n_neighbors= 49 ) # 추후에 방대한 데이터로 
 kn.fit( fish_data , fish_target ) # 학습
 print( kn.score( fish_data , fish_target ) ) # 정확도 측정 # 0.7142857142857143 , 빙어는 오답처리  # 71점
 # 총 49마리 중에서 참조할 이웃을 49마리로 설정하면 어떠한 임의의 값 예측하더라도 무조건 도미 수가 많아서 '도미'
-
+ 
+ 
 
