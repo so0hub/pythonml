@@ -51,7 +51,6 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neighbors import KNeighborsRegressor
 knr = KNeighborsRegressor()
 knr.fit( train_input , train_target ) # 모델 학습
-p
 
 
 # [단계 7] 초기 모델 평가 및 결정계수(R^2) 확인
@@ -62,4 +61,21 @@ print( knr.score( train_input , train_target ) ) # 0.575461861044996
 # [단계 8] 이웃 개수 변경에 따른 회귀선 시각화
 # 이웃의 개수(n_neighbors)가 1, 3, 5, 10으로 변화할 때, 꽃받침 길이 4.0부터 6.0까지의 구간에 대한 모델의 예측 회귀선을 각각 시각화하세요.
 
+x=np.arange(4.0,6.0).reshape(-1,1)
+for k in [1,3,5,10]:
+    knr.n_neighbors=k
+    knr.fit(train_input, train_target)
+    print(knr.score(test_input, test_target))
+    pred=knr.predict(x)
+    print(pred)
+
+    import matplotlib.pyplot as plt
+    plt.scatter(train_input, train_target)
+    plt.plot(x,pred)
+    plt.title(f"k={k}")
+    plt.show()
 # [단계 9] 단계8 에서 가장 적합한 이웃의 개수( 1, 3, 5, 10 중에)를 주석에 작성 하시오. 
+# k=1 0.15638606676342526
+# k=3 0.403725205611998
+# k=5 0.60355587808418
+# k=10 0.5215348330914367
