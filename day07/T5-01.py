@@ -88,6 +88,19 @@ print( np.sum( [[1,2,3],[4,5,6]] , axis = 0 ) ) # [5 7 9]       # axis=0 행단�
 # np.sqrt( 리스트 ) # 제곱근(루트)
 result = np.sqrt( np.sum( ( centerClus - scaledNewDf ) **2 , axis = 1 ) ) # sqrt = 루트(제곱근)
 print( result ) # [1.26432524 3.25608991 0.97575994] # 클러스터 중심점에서 새로운 자료의 거리 # 가장 가까운 곳은 [2]번 인덱스
-
-
 print( km.predict( scaledNewDf ) ) # [2] # 유클리드 거리 계산과 predict 예측과 동일하다.
+
+
+# [4] GWM : 가우시안 모델 , +군집확률+
+from sklearn.mixture import GaussianMixture
+# n_components= k , k-mean 유사하게 정규분포(군집) 의 수
+gm = GaussianMixture( n_components=3 , random_state=42 ) # 객체 생성
+gm.fit( scaledDf ) # 학습
+print( gm.predict( scaledNewDf ) ) # [0]
+print( gm.predict_proba( scaledNewDf )*100 ) # [[8.44533923e+01 3.78321527e-10 1.55466077e+01]]
+
+# 시각화
+plt.scatter( scaledDf[ : , 0 ] , scaledDf[ : , 1 ] , c=df['cluster'] )
+plt.scatter( scaledNewDf[ : , 0 ] , scaledNewDf[ : , 1 ] , marker = '^' )
+plt.show()
+# 현재 특성이 3개이므로 3D 차원 시각화 필요 -> N차원(특성많은) 시각화 힘들다.
