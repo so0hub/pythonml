@@ -142,4 +142,40 @@ plt.ylabel('pca 2')
 plt.show()
 
 
+# [6] 분석모델 스코어 , 실루엣 스코어( 분리/응집 평가 )
+from sklearn.metrics import silhouette_score
+# silhouette_score( 자료 , 모델군집 ) # 객체 생성
+sc = silhouette_score( scaledDf , km.labels_ ) # k-mean 평가 모델
+print( sc ) # 0.443044585687068
 
+# gmm 가우시안 모델에서는 k-mean 처럼 labels_ 속성이 없다. 그래서 예측을 통한 군집도 구한다.
+sc = silhouette_score( scaledDf , gm.predict( scaledDf ) ) # GMM 평가 모델
+print( sc ) # 0.46537942714394775
+
+# 스코어 개선 : [1] 최적의 K   [2] PCA 주성분(가중치)  [3] 이상치 제거( 튀는 자료는 군집 제외 ) 등등
+
+# [7] HDBSCAN 모델 , 최적의 k 와 이상치 제거 모델
+import hdbscan # pip install hdbscan # 외부 라이브러리
+# min_cluster_size= 최소의 클러스터 개수
+# min_samples= 클러스터들의 중심점이 되기 위한 최소 자료(샘플수) , 최소 2개 이상 부터 군집 가능
+# prediction_data=True , 학습된 모델이 새로운 데이터로 예측할 경우 캐시(임시메모리) 활성화
+# 군집은 예측모델 사용
+hdb = hdbscan.HDBSCAN( min_cluster_size= 2 , min_samples= 2 , prediction_data=True ) # 객체 생성
+hdb.fit( scaledDf )
+print( hdb.labels_ ) # 군집/그룹 번호는 0부터 시작   # -1( 이상치 샘플 )  어디에도 속하지 않은 샘플
+# [-1  2  2  0 -1  0 -1 -1 -1  3  4 -1  1  1  1 -1  2  2  1  1  2 -1  0  2
+#   3  2 -1  2 -1 -1  3 -1  4  2  2  4  4 -1]
+print( hdbscan.approximate_predict( hdb , scaledDf ) )
+# (array([-1,  2,  2,  0, -1,  0, -1, -1, -1,  3,  4, -1,  1,  1,  1, -1,  2,
+#         2,  1,  1,  2, -1,  0,  2,  3,  2, -1,  2, -1, -1,  3, -1,  4,  2,
+#         2,  4,  4, -1], dtype=int32), array([0.        , 1.        , 1.        , 1.        , 0.        ,
+#        1.        , 0.        , 0.        , 0.        , 1.        ,
+#        0.80119033, 0.        , 0.9148799 , 1.        , 0.91425926,
+#        0.        , 1.        , 1.        , 1.        , 1.        ,
+#        1.        , 0.        , 1.        , 1.        , 1.        ,
+#        0.81486716, 0.        , 1.        , 0.        , 0.        ,
+#        1.        , 0.        , 0.61919463, 1.        , 0.93532801,
+#        1.        , 1.        , 0.        ]))
+print( hdbscan.approximate_predict( hdb , scaledNewDf ) )
+# (array([1], dtype=int32), array([1.]))
+# [1] 1 그룹 예측
