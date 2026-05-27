@@ -104,3 +104,42 @@ plt.scatter( scaledDf[ : , 0 ] , scaledDf[ : , 1 ] , c=df['cluster'] )
 plt.scatter( scaledNewDf[ : , 0 ] , scaledNewDf[ : , 1 ] , marker = '^' )
 plt.show()
 # 현재 특성이 3개이므로 3D 차원 시각화 필요 -> N차원(특성많은) 시각화 힘들다.
+
+
+# [5] PCA : 주성분 분석 / 차원 축소 , 차원이 크면 시각화 불가능하다 , 주로 2차원/3차원 압축한다. 
+from sklearn.decomposition import PCA
+# 여러개 특성/성분 을 가진 모델들을 2/3 차원 변경 , 무게/당도/단단함 => 2차원 표현
+pca = PCA( n_components= 2 ) # 객체 생성 # 주로 2 또는 3 으로 사용된다.
+
+# 주성분 만들기 : 각 특성/성분 마다의 가중치 더해서 데이터 변동성 계산
+# 예] pca = (무게 * 가중치1) + (당도 * 가중치2) + (단단함 * 가중치3)
+pcaDf = pca.fit_transform( scaledDf )
+print( pcaDf ) # 행 = 데이터 수 , 열 = 주성분 수
+# [[ 1.92249033 -0.42197445]
+#  [ 0.17574959  0.23619089]
+#  [ 0.97925831  0.05097638]
+#  [-2.69005137 -0.11042576]
+#  [-3.76231604  0.0530791 ]
+#             ~ ...
+df['pca_x'] = pcaDf[ : , 0 ] # 첫 번째 열을 제1주성분   # 데이터의 변동성(가중치) 을 가장 크게 설명하는 주성분
+df['pca_y'] = pcaDf[ : , 1 ] # 두 번째 열을 제2주성분   # 제1주성분을 직교하면서 두 번째로 변동성(가중치)이 가장 크게 설명하는 주성분
+# 주성분의 가중치 확인
+components = pca.components_
+print( components )
+# [[-0.58085247 -0.56151577  0.58933051]
+#  [-0.50860441  0.81561969  0.27583705]]
+#  무게가중치  ,    당도가중치  ,   단단가중치
+
+
+# 예측할 값을 주성분 변경
+pcaNewDf = pca.transform( scaledNewDf ) 
+
+# 시각화
+plt.scatter( df['pca_x'] , df['pca_y'] , df['cluster'] , cmap='virids' , marker='o' )
+plt.scatter( pcaNewDf[ : , 0 ] , pcaNewDf[ : , 1 ] , marker='^' )
+plt.xlabel('pca 1')
+plt.ylabel('pca 2')
+plt.show()
+
+
+
